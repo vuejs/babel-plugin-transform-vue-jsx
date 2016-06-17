@@ -1,0 +1,47 @@
+{
+  "name": "babel-plugin-transform-vue-jsx",
+  "version": "1.0.0",
+  "description": "babel plugin for vue 2.0 jsx",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "scripts": {
+    "dev": "babel src/index.js -w -o index.js",
+    "build": "babel src/index.js -o index.js",
+    "lint": "eslint src",
+    "test": "npm run lint && mocha --compilers js:babel-register"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vuejs/babel-plugin-transform-vue-jsx.git"
+  },
+  "keywords": [
+    "vue",
+    "babel",
+    "jsx"
+  ],
+  "author": "Evan You",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vuejs/babel-plugin-transform-vue-jsx/issues"
+  },
+  "homepage": "https://github.com/vuejs/babel-plugin-transform-vue-jsx#readme",
+  "dependencies": {
+    "esutils": "^2.0.2"
+  },
+  "peerDependencies": {
+    "babel-plugin-syntax-jsx": "^6.8.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.10.1",
+    "babel-plugin-syntax-jsx": "^6.8.0",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-register": "^6.9.0",
+    "chai": "^3.5.0",
+    "eslint": "^2.12.0",
+    "eslint-config-vue": "^1.0.3",
+    "mocha": "^2.5.3",
+    "vue": "^2.0.0-alpha.4"
+  }
+}
