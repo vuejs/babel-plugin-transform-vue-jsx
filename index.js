@@ -31,52 +31,8 @@ module.exports = function (babel) {
     }
   }
 
-  function convertJSXIdentifier (node, parent) {
-    if (t.isJSXIdentifier(node)) {
-      if (node.name === 'this' && t.isReferenced(node, parent)) {
-        return t.thisExpression()
-      } else if (esutils.keyword.isIdentifierNameES6(node.name)) {
-        node.type = 'Identifier'
-      } else {
-        return t.stringLiteral(node.name)
-      }
-    } else if (t.isJSXMemberExpression(node)) {
-      return t.memberExpression(
-        convertJSXIdentifier(node.object, node),
-        convertJSXIdentifier(node.property, node)
-      )
-    }
-
-    return node
-  }
-
-  function convertAttributeValue (node) {
-    if (t.isJSXExpressionContainer(node)) {
-      return node.expression
-    } else {
-      return node
-    }
-  }
-
-  function convertAttribute (node) {
-    var value = convertAttributeValue(node.value || t.booleanLiteral(true))
-
-    if (t.isStringLiteral(value) && !t.isJSXExpressionContainer(node.value)) {
-      value.value = value.value.replace(/\n\s+/g, ' ')
-    }
-
-    if (t.isValidIdentifier(node.name.name)) {
-      node.name.type = 'Identifier'
-    } else {
-      node.name = t.stringLiteral(node.name.name)
-    }
-
-    return t.inherits(t.objectProperty(node.name, value), node)
-  }
-
   function buildElementCall (path, file) {
     path.parent.children = t.react.buildChildren(path.parent)
-
     var tagExpr = convertJSXIdentifier(path.node.name, path.node)
     var args = []
 
@@ -99,10 +55,27 @@ module.exports = function (babel) {
     } else {
       attribs = t.nullLiteral()
     }
-
     args.push(attribs)
 
     return t.callExpression(t.identifier('h'), args)
+  }
+
+  function convertJSXIdentifier (node, parent) {
+    if (t.isJSXIdentifier(node)) {
+      if (node.name === 'this' && t.isReferenced(node, parent)) {
+        return t.thisExpression()
+      } else if (esutils.keyword.isIdentifierNameES6(node.name)) {
+        node.type = 'Identifier'
+      } else {
+        return t.stringLiteral(node.name)
+      }
+    } else if (t.isJSXMemberExpression(node)) {
+      return t.memberExpression(
+        convertJSXIdentifier(node.object, node),
+        convertJSXIdentifier(node.property, node)
+      )
+    }
+    return node
   }
 
   /**
@@ -118,7 +91,6 @@ module.exports = function (babel) {
 
     function pushProps () {
       if (!_props.length) return
-
       objs.push(t.objectExpression(_props))
       _props = []
     }
@@ -143,14 +115,33 @@ module.exports = function (babel) {
       if (!t.isObjectExpression(objs[0])) {
         objs.unshift(t.objectExpression([]))
       }
-
       // spread it
       attribs = t.callExpression(
         file.addHelper('extends'),
         objs
       )
     }
-
     return attribs
+  }
+
+  function convertAttribute (node) {
+    var value = convertAttributeValue(node.value || t.booleanLiteral(true))
+    if (t.isStringLiteral(value) && !t.isJSXExpressionContainer(node.value)) {
+      value.value = value.value.replace(/\n\s+/g, ' ')
+    }
+    if (t.isValidIdentifier(node.name.name)) {
+      node.name.type = 'Identifier'
+    } else {
+      node.name = t.stringLiteral(node.name.name)
+    }
+    return t.inherits(t.objectProperty(node.name, value), node)
+  }
+
+  function convertAttributeValue (node) {
+    if (t.isJSXExpressionContainer(node)) {
+      return node.expression
+    } else {
+      return node
+    }
   }
 }
