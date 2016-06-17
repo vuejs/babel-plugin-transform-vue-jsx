@@ -11,8 +11,10 @@ module.exports = function (babel) {
       },
       JSXElement: {
         exit (path, file) {
+          // turn tag into createElement call
           const callExpr = buildElementCall(path.get('openingElement'), file)
-          callExpr.arguments = callExpr.arguments.concat(path.node.children)
+          // add children array as 3rd arg
+          callExpr.arguments = callExpr.arguments.concat(t.arrayExpression(path.node.children))
           if (callExpr.arguments.length >= 3) {
             callExpr._prettyCall = true
           }
