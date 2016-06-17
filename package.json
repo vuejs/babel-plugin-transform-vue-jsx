@@ -8,7 +8,8 @@
   ],
   "scripts": {
     "lint": "eslint index.js",
-    "test": "npm run lint && mocha --compilers js:babel-register"
+    "test": "npm run lint && mocha --compilers js:babel-register",
+    "build": "babel example/example.js -o example/example.build.js"
   },
   "repository": {
     "type": "git",
