@@ -1,5 +1,6 @@
 var esutils = require('esutils')
 var isReservedTag = require('./lib/is-reserved')
+var groupProps = require('./lib/group-props')
 
 module.exports = function (babel) {
   var t = babel.types
@@ -106,6 +107,10 @@ module.exports = function (babel) {
     }
 
     pushProps()
+
+    if (objs[0]) {
+      objs[0] = groupProps(objs[0].properties, t)
+    }
 
     if (objs.length === 1) {
       // only one object
