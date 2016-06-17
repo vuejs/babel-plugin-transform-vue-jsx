@@ -1,103 +1,108 @@
-'use strict';
-
-var _esutils = require('esutils');
-
-var _esutils2 = _interopRequireDefault(_esutils);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var esutils = require('esutils')
+var isReservedTag = require('./lib/is-reserved')
 
 module.exports = function (babel) {
-  var t = babel.types;
+  var t = babel.types
 
   return {
     inherits: require('babel-plugin-syntax-jsx'),
     visitor: {
-      JSXNamespacedName: function JSXNamespacedName(path) {
-        throw path.buildCodeFrameError('Namespace tags are not supported. JSX is not XML.');
+      JSXNamespacedName (path) {
+        throw path.buildCodeFrameError('Namespace tags are not supported. JSX is not XML.')
       },
-
       JSXElement: {
-        exit: function exit(path, file) {
-          var callExpr = buildElementCall(path.get('openingElement'), file);
-          callExpr.arguments = callExpr.arguments.concat(path.node.children);
-          if (callExpr.arguments.length >= 3) {
-            callExpr._prettyCall = true;
+        exit (path, file) {
+          // turn tag into createElement call
+          var callExpr = buildElementCall(path.get('openingElement'), file)
+          var tag = callExpr.arguments[0]
+          var children = t.arrayExpression(path.node.children)
+          if (!t.isStringLiteral(tag) || !isReservedTag(tag.value)) {
+            // if this is a non-reserved tag, children needs to be a thunk
+            children = t.arrowFunctionExpression([], children)
           }
-          path.replaceWith(t.inherits(callExpr, path.node));
+          // add children array as 3rd arg
+          callExpr.arguments.push(children)
+          if (callExpr.arguments.length >= 3) {
+            callExpr._prettyCall = true
+          }
+          path.replaceWith(t.inherits(callExpr, path.node))
         }
       }
     }
-  };
+  }
 
-  function convertJSXIdentifier(node, parent) {
+  function convertJSXIdentifier (node, parent) {
     if (t.isJSXIdentifier(node)) {
       if (node.name === 'this' && t.isReferenced(node, parent)) {
-        return t.thisExpression();
-      } else if (_esutils2.default.keyword.isIdentifierNameES6(node.name)) {
-        node.type = 'Identifier';
+        return t.thisExpression()
+      } else if (esutils.keyword.isIdentifierNameES6(node.name)) {
+        node.type = 'Identifier'
       } else {
-        return t.stringLiteral(node.name);
+        return t.stringLiteral(node.name)
       }
     } else if (t.isJSXMemberExpression(node)) {
-      return t.memberExpression(convertJSXIdentifier(node.object, node), convertJSXIdentifier(node.property, node));
+      return t.memberExpression(
+        convertJSXIdentifier(node.object, node),
+        convertJSXIdentifier(node.property, node)
+      )
     }
 
-    return node;
+    return node
   }
 
-  function convertAttributeValue(node) {
+  function convertAttributeValue (node) {
     if (t.isJSXExpressionContainer(node)) {
-      return node.expression;
+      return node.expression
     } else {
-      return node;
+      return node
     }
   }
 
-  function convertAttribute(node) {
-    var value = convertAttributeValue(node.value || t.booleanLiteral(true));
+  function convertAttribute (node) {
+    var value = convertAttributeValue(node.value || t.booleanLiteral(true))
 
     if (t.isStringLiteral(value) && !t.isJSXExpressionContainer(node.value)) {
-      value.value = value.value.replace(/\n\s+/g, ' ');
+      value.value = value.value.replace(/\n\s+/g, ' ')
     }
 
     if (t.isValidIdentifier(node.name.name)) {
-      node.name.type = 'Identifier';
+      node.name.type = 'Identifier'
     } else {
-      node.name = t.stringLiteral(node.name.name);
+      node.name = t.stringLiteral(node.name.name)
     }
 
-    return t.inherits(t.objectProperty(node.name, value), node);
+    return t.inherits(t.objectProperty(node.name, value), node)
   }
 
-  function buildElementCall(path, file) {
-    path.parent.children = t.react.buildChildren(path.parent);
+  function buildElementCall (path, file) {
+    path.parent.children = t.react.buildChildren(path.parent)
 
-    var tagExpr = convertJSXIdentifier(path.node.name, path.node);
-    var args = [];
+    var tagExpr = convertJSXIdentifier(path.node.name, path.node)
+    var args = []
 
-    var tagName = void 0;
+    var tagName
     if (t.isIdentifier(tagExpr)) {
-      tagName = tagExpr.name;
+      tagName = tagExpr.name
     } else if (t.isLiteral(tagExpr)) {
-      tagName = tagExpr.value;
+      tagName = tagExpr.value
     }
 
     if (t.react.isCompatTag(tagName)) {
-      args.push(t.stringLiteral(tagName));
+      args.push(t.stringLiteral(tagName))
     } else {
-      args.push(tagExpr);
+      args.push(tagExpr)
     }
 
-    var attribs = path.node.attributes;
+    var attribs = path.node.attributes
     if (attribs.length) {
-      attribs = buildOpeningElementAttributes(attribs, file);
+      attribs = buildOpeningElementAttributes(attribs, file)
     } else {
-      attribs = t.nullLiteral();
+      attribs = t.nullLiteral()
     }
 
-    args.push(attribs);
+    args.push(attribs)
 
-    return t.callExpression(t.identifier('h'), args);
+    return t.callExpression(t.identifier('h'), args)
   }
 
   /**
@@ -107,42 +112,45 @@ module.exports = function (babel) {
    * all prior attributes to an array for later processing.
    */
 
-  function buildOpeningElementAttributes(attribs, file) {
-    var _props = [];
-    var objs = [];
+  function buildOpeningElementAttributes (attribs, file) {
+    var _props = []
+    var objs = []
 
-    function pushProps() {
-      if (!_props.length) return;
+    function pushProps () {
+      if (!_props.length) return
 
-      objs.push(t.objectExpression(_props));
-      _props = [];
+      objs.push(t.objectExpression(_props))
+      _props = []
     }
 
     while (attribs.length) {
-      var prop = attribs.shift();
+      var prop = attribs.shift()
       if (t.isJSXSpreadAttribute(prop)) {
-        pushProps();
-        objs.push(prop.argument);
+        pushProps()
+        objs.push(prop.argument)
       } else {
-        _props.push(convertAttribute(prop));
+        _props.push(convertAttribute(prop))
       }
     }
 
-    pushProps();
+    pushProps()
 
     if (objs.length === 1) {
       // only one object
-      attribs = objs[0];
+      attribs = objs[0]
     } else {
       // looks like we have multiple objects
       if (!t.isObjectExpression(objs[0])) {
-        objs.unshift(t.objectExpression([]));
+        objs.unshift(t.objectExpression([]))
       }
 
       // spread it
-      attribs = t.callExpression(file.addHelper('extends'), objs);
+      attribs = t.callExpression(
+        file.addHelper('extends'),
+        objs
+      )
     }
 
-    return attribs;
+    return attribs
   }
-};
+}

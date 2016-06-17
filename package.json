@@ -7,9 +7,7 @@
     "index.js"
   ],
   "scripts": {
-    "dev": "babel src/index.js -w -o index.js",
-    "build": "babel src/index.js -o index.js",
-    "lint": "eslint src",
+    "lint": "eslint index.js",
     "test": "npm run lint && mocha --compilers js:babel-register"
   },
   "repository": {
