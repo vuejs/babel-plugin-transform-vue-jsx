@@ -4,7 +4,8 @@
   "description": "Babel plugin for Vue 2.0 JSX",
   "main": "index.js",
   "files": [
-    "index.js"
+    "index.js",
+    "lib"
   ],
   "scripts": {
     "lint": "eslint index.js",
