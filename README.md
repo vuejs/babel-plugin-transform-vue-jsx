@@ -1,4 +1,4 @@
-# babel-plugin-transform-vue-jsx
+# babel-plugin-transform-vue-jsx [![CircleCI](https://img.shields.io/circleci/project/vuejs/babel-plugin-transform-vue-jsx.svg?maxAge=2592000)](https://circleci.com/gh/vuejs/babel-plugin-transform-vue-jsx)
 
 > Babel plugin for Vue 2.0 JSX
 
