@@ -1,5 +1,5 @@
 {
   "presets": ["es2015"],
-  "plugins": ["syntax-jsx", "./index"],
+  "plugins": ["./index"],
   "ignore": ["node_modules"]
 }

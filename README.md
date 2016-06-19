@@ -5,6 +5,7 @@
 ### Usage
 
 ``` bash
+# also needs babel-plugin-syntax-jsx as peer dependency
 npm install babel-plugin-transform-vue-jsx --save-dev
 ```
 
@@ -13,7 +14,7 @@ In your `.babelrc`:
 ``` json
 {
   "presets": ["es2015"],
-  "plugins": ["syntax-jsx", "transform-vue-jsx"]
+  "plugins": ["transform-vue-jsx"]
 }
 ```
 
