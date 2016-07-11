@@ -103,3 +103,20 @@ render (h) {
   )
 }
 ```
+
+### JSX Spread
+
+JSX spread is supported, and this plugin will intelligently merge nested data properties. For example:
+
+``` jsx
+const data = {
+  class: ['b', 'c']
+}
+const vnode = <div class="a" {...data}/>
+```
+
+The merged data will be:
+
+``` js
+{ class: ['a', 'b', 'c'] }
+```
