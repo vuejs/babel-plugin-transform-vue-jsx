@@ -2,11 +2,18 @@
 
 > Babel plugin for Vue 2.0 JSX
 
+### Requirements
+
+- Assumes you are using Babel with a module bundler e.g. Webpack, because the spread merge helper is imported as a module to avoid duplication.
+
 ### Usage
 
 ``` bash
-# also needs babel-plugin-syntax-jsx as peer dependency
-npm install babel-plugin-transform-vue-jsx --save-dev
+npm install
+  babel-plugin-syntax-jsx\
+  babel-plugin-transform-vue-jsx\
+  babel-helper-vue-jsx-merge-props\
+  --save-dev
 ```
 
 In your `.babelrc`:
