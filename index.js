@@ -82,7 +82,7 @@ module.exports = function (babel) {
   /**
    * The logic for this is quite terse. It's because we need to
    * support spread elements. We loop over all attributes,
-   * breaking on spreads, we then push a new object containg
+   * breaking on spreads, we then push a new object containing
    * all prior attributes to an array for later processing.
    */
 
