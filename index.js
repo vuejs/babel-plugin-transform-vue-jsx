@@ -1,6 +1,33 @@
 var esutils = require('esutils')
+var template = require('babel-template')
 var isReservedTag = require('./lib/is-reserved')
 var groupProps = require('./lib/group-props')
+
+var mergeProps = template(`
+  function _mergeJSXProps (objs) {
+    var nestRE = /^(attrs|props|on|class|style|staticAttrs)$/
+    return objs.reduce(function (a, b) {
+      for (var key in b) {
+        if (a[key] && nestRE.test(key)) {
+          var aa = a[key]
+          var bb = b[key]
+          if (Array.isArray(aa)) {
+            a[key] = aa.concat(bb)
+          } else if (Array.isArray(bb)) {
+            a[key] = [aa].concat(bb)
+          } else {
+            for (var nestedKey in bb) {
+              aa[nestedKey] = bb[nestedKey]
+            }
+          }
+        } else {
+          a[key] = b[key]
+        }
+      }
+      return a
+    }, {})
+  }
+`)()
 
 module.exports = function (babel) {
   var t = babel.types
@@ -108,7 +135,7 @@ module.exports = function (babel) {
 
     pushProps()
 
-    if (objs[0]) {
+    if (objs[0] && t.isObjectExpression(objs[0])) {
       objs[0] = groupProps(objs[0].properties, t)
     }
 
@@ -120,10 +147,15 @@ module.exports = function (babel) {
       if (!t.isObjectExpression(objs[0])) {
         objs.unshift(t.objectExpression([]))
       }
+      // add prop merging helper
+      const fileBody = file.file.path.node.body
+      if (fileBody[0] !== mergeProps) {
+        fileBody.unshift(mergeProps)
+      }
       // spread it
       attribs = t.callExpression(
-        file.addHelper('extends'),
-        objs
+        t.identifier('_mergeJSXProps'),
+        [t.arrayExpression(objs)]
       )
     }
     return attribs

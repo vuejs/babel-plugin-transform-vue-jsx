@@ -89,6 +89,34 @@ describe('babel-plugin-transform-vue-jsx', () => {
     expect(childVnode.tag).to.equal('div')
     expect(childVnode.children[0].text).to.equal('foo')
   })
+
+  it('spread', () => {
+    const data = {
+      attrs: {
+        id: 'hehe'
+      },
+      on: {
+        click: 1
+      },
+      props: {
+        innerHTML: 2
+      },
+      hook: {
+        insert: 3
+      },
+      class: ['a', 'b']
+    }
+    const vnode = render(h => (
+      <div href="huhu" class={{ c: true }} {...data}/>
+    ))
+
+    expect(vnode.data.attrs.id).to.equal('hehe')
+    expect(vnode.data.attrs.href).to.equal('huhu')
+    expect(vnode.data.on.click).to.equal(1)
+    expect(vnode.data.props.innerHTML).to.equal(2)
+    expect(vnode.data.hook.insert).to.equal(3)
+    expect(vnode.data.class).to.deep.equal([{ c: true }, 'a', 'b'])
+  })
 })
 
 // helpers
