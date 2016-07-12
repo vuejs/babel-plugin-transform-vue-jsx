@@ -100,6 +100,7 @@ module.exports = function (babel) {
       var prop = attribs.shift()
       if (t.isJSXSpreadAttribute(prop)) {
         pushProps()
+        prop.argument._isSpread = true
         objs.push(prop.argument)
       } else {
         _props.push(convertAttribute(prop))
@@ -108,18 +109,14 @@ module.exports = function (babel) {
 
     pushProps()
 
-    if (objs[0] && t.isObjectExpression(objs[0])) {
+    if (!objs[0]._isSpread) {
       objs[0] = groupProps(objs[0].properties, t)
     }
 
     if (objs.length === 1) {
       // only one object
       attribs = objs[0]
-    } else {
-      // looks like we have multiple objects
-      if (!t.isObjectExpression(objs[0])) {
-        objs.unshift(t.objectExpression([]))
-      }
+    } else if (objs.length) {
       // add prop merging helper
       file.addImport('babel-helper-vue-jsx-merge-props', 'default', '_mergeJSXProps')
       // spread it

@@ -90,7 +90,17 @@ describe('babel-plugin-transform-vue-jsx', () => {
     expect(childVnode.children[0].text).to.equal('foo')
   })
 
-  it('spread', () => {
+  it('spread (single object expression)', () => {
+    const props = {
+      innerHTML: 2
+    }
+    const vnode = render(h => (
+      <div {...{ props }}/>
+    ))
+    expect(vnode.data.props.innerHTML).to.equal(2)
+  })
+
+  it('spread (mixed)', () => {
     const data = {
       attrs: {
         id: 'hehe'
@@ -107,7 +117,7 @@ describe('babel-plugin-transform-vue-jsx', () => {
       class: ['a', 'b']
     }
     const vnode = render(h => (
-      <div href="huhu" class={{ c: true }} {...data}/>
+      <div href="huhu" {...data} class={{ c: true }}/>
     ))
 
     expect(vnode.data.attrs.id).to.equal('hehe')
@@ -115,7 +125,7 @@ describe('babel-plugin-transform-vue-jsx', () => {
     expect(vnode.data.on.click).to.equal(1)
     expect(vnode.data.props.innerHTML).to.equal(2)
     expect(vnode.data.hook.insert).to.equal(3)
-    expect(vnode.data.class).to.deep.equal([{ c: true }, 'a', 'b'])
+    expect(vnode.data.class).to.deep.equal(['a', 'b', { c: true }])
   })
 })
 
