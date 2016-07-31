@@ -109,9 +109,9 @@ module.exports = function (babel) {
 
     pushProps()
 
-    if (!objs[0]._isSpread) {
-      objs[0] = groupProps(objs[0].properties, t)
-    }
+    objs = objs.map(function (o) {
+      return o._isSpread ? o : groupProps(o.properties, t)
+    })
 
     if (objs.length === 1) {
       // only one object

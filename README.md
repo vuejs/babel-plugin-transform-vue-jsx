@@ -58,17 +58,30 @@ First, Vue 2.0's vnode format is different from React's. The second argument to 
 ``` js
 render (h) {
   return h('div', {
+    // Component props
+    props: {
+      msg: 'hi'
+    },
     // normal HTML attributes
     attrs: {
       id: 'foo'
     },
-    // DOM properties
-    props: {
+    // DOM props
+    domProps: {
       innerHTML: 'bar'
     },
-    // event handlers are nested under "on"
+    // Event handlers are nested under "on", though
+    // modifiers such as in v-on:keyup.enter are not
+    // supported. You'll have to manually check the
+    // keyCode in the handler instead.
     on: {
-      click: this.onClick
+      click: this.clickHandler
+    },
+    // For components only. Allows you to listen to
+    // native events, rather than events emitted from
+    // the component using vm.$emit.
+    nativeOn: {
+      click: this.nativeClickHandler
     },
     // class is a special module, same API as `v-bind:class`
     class: {
@@ -83,7 +96,7 @@ render (h) {
     // other special top-level properties
     key: 'key',
     ref: 'ref',
-    transition: 'fade'
+    slot: 'slot'
   })
 }
 ```
@@ -94,18 +107,19 @@ The equivalent of the above in Vue 2.0 JSX is:
 render (h) {
   return (
     <div
-      // normal attributes
+      // normal attributes or component props.
       id="foo"
-      // DOM properties are prefixed with prop-
-      prop-innerHTML="bar"
-      // event listeners are prefixed with on-
-      on-click={this.onClick}
+      // DOM properties are prefixed with domProps-
+      domProps-innerHTML="bar"
+      // event listeners are prefixed with on- or nativeOn-
+      on-click={this.clickHandler}
+      nativeOn-click={this.nativeClickHandler}
       // other special top-level properties
       class={{ foo: true, bar: false }}
       style={{ color: 'red', fontSize: '14px' }}
       key="key"
       ref="ref"
-      transition="fade">
+      slot="slot">
     </div>
   )
 }
