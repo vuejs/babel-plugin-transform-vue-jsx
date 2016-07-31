@@ -31,7 +31,7 @@
     "esutils": "^2.0.2"
   },
   "peerDependencies": {
-    "babel-helper-vue-jsx-merge-props": "^1.0.0",
+    "babel-helper-vue-jsx-merge-props": "^2.0.0",
     "babel-plugin-syntax-jsx": "^6.8.0"
   },
   "devDependencies": {
