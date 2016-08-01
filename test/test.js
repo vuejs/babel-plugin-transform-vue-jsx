@@ -50,13 +50,19 @@ describe('babel-plugin-transform-vue-jsx', () => {
       <div
         on-click={noop}
         domProps-innerHTML="<p>hi</p>"
-        hook-insert={noop}
-        directive-hello={{  }}>
+        hook-insert={noop}>
       </div>
     ))
     expect(vnode.data.on.click).to.equal(noop)
     expect(vnode.data.domProps.innerHTML).to.equal('<p>hi</p>')
     expect(vnode.data.hook.insert).to.equal(noop)
+  })
+
+  it('should support data attributes', () => {
+    const vnode = render(h => (
+      <div data-id="1"></div>
+    ))
+    expect(vnode.data.attrs['data-id']).to.equal('1')
   })
 
   it('should handle identifier tag name as components', () => {
