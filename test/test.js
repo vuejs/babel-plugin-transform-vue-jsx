@@ -71,11 +71,11 @@ describe('babel-plugin-transform-vue-jsx', () => {
     expect(vnode.tag).to.contain('vue-component')
   })
 
-  it('should thunkify component children', () => {
+  it('should work for components with children', () => {
     const Test = {}
     const vnode = render(h => <Test><div>hi</div></Test>)
     const children = vnode.componentOptions.children
-    expect(children).to.be.a('function')
+    expect(children[0].tag).to.equal('div')
   })
 
   it('should bind things in thunk with correct this context', () => {

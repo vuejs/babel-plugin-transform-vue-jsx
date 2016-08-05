@@ -1,5 +1,4 @@
 var esutils = require('esutils')
-var isReservedTag = require('./lib/is-reserved')
 var groupProps = require('./lib/group-props')
 
 module.exports = function (babel) {
@@ -15,14 +14,8 @@ module.exports = function (babel) {
         exit (path, file) {
           // turn tag into createElement call
           var callExpr = buildElementCall(path.get('openingElement'), file)
-          var tag = callExpr.arguments[0]
-          var children = t.arrayExpression(path.node.children)
-          if (!t.isStringLiteral(tag) || !isReservedTag(tag.value)) {
-            // if this is a non-reserved tag, children needs to be a thunk
-            children = t.arrowFunctionExpression([], children)
-          }
           // add children array as 3rd arg
-          callExpr.arguments.push(children)
+          callExpr.arguments.push(t.arrayExpression(path.node.children))
           if (callExpr.arguments.length >= 3) {
             callExpr._prettyCall = true
           }
