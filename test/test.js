@@ -144,6 +144,16 @@ describe('babel-plugin-transform-vue-jsx', () => {
     vnode.data.hook.insert()
     expect(calls).to.deep.equal([1, 2, 3, 4])
   })
+
+  it('custom directives', () => {
+    const vnode = render(h => (
+      <div v-test={ 123 } v-other={ 234 } />
+    ))
+
+    expect(vnode.data.directives.length).to.equal(2)
+    expect(vnode.data.directives[0]).to.deep.equal({ name: 'test', value: 123 })
+    expect(vnode.data.directives[1]).to.deep.equal({ name: 'other', value: 234 })
+  })
 })
 
 // helpers

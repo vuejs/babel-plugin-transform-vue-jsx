@@ -145,3 +145,21 @@ The merged data will be:
 ``` js
 { class: ['a', 'b', 'c'] }
 ```
+
+### Vue directives
+
+Note that built-in Vue directives are not supported when using JSX. In most cases there are obvious programmatic equivalents, for example `v-if` is just a ternary expression, and `v-for` is just an `array.map()` expression, etc.
+
+For custom directives, you can use the `v-name={value}` syntax. However, note that directive arguments and modifiers are not supported using this syntax. There are two workarounds:
+
+1. Pass everything as an object via `value`, e.g. `v-name={{ value, modifier: true }}`
+
+2. Use the raw vnode directive data format:
+
+``` js
+const directives = [
+  { name: 'my-dir', value: 123, modifiers: { abc: true } }
+]
+
+return <div {...{ directives }}/>
+```
