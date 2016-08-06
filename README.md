@@ -13,7 +13,7 @@ Version ^3.0.0 works only with vue@^2.0.0-beta.7.
 ### Usage
 
 ``` bash
-npm install
+npm install\
   babel-plugin-syntax-jsx\
   babel-plugin-transform-vue-jsx\
   babel-helper-vue-jsx-merge-props\
