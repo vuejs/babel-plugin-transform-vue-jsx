@@ -2,13 +2,11 @@
 
 > Babel plugin for Vue 2.0 JSX
 
-### Compatibility Notice
-
-Version ^3.0.0 works only with vue@^2.0.0-beta.7.
-
 ### Requirements
 
 - Assumes you are using Babel with a module bundler e.g. Webpack, because the spread merge helper is imported as a module to avoid duplication.
+
+- This is mutually exclusive with `babel-plugin-transform-react-jsx`. Alternatively, you can also use React JSX transform with the [runtime adaptor](https://github.com/vuejs/vue-jsx-adaptor) instead.
 
 ### Usage
 
