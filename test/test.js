@@ -49,11 +49,13 @@ describe('babel-plugin-transform-vue-jsx', () => {
     const vnode = render(h => (
       <div
         on-click={noop}
+        on-kebab-case={noop}
         domProps-innerHTML="<p>hi</p>"
         hook-insert={noop}>
       </div>
     ))
     expect(vnode.data.on.click).to.equal(noop)
+    expect(vnode.data.on['kebab-case']).to.equal(noop)
     expect(vnode.data.domProps.innerHTML).to.equal('<p>hi</p>')
     expect(vnode.data.hook.insert).to.equal(noop)
   })
