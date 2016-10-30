@@ -1,3 +1,5 @@
+const IDENTIFIER = 'createElement'
+
 var esutils = require('esutils')
 var groupProps = require('./lib/group-props')
 
@@ -51,7 +53,10 @@ module.exports = function (babel) {
     }
     args.push(attribs)
 
-    return t.callExpression(t.identifier('createElement'), args)
+    return t.callExpression(
+      t.identifier(IDENTIFIER),
+      args
+    )
   }
 
   function convertJSXIdentifier (node, parent) {
