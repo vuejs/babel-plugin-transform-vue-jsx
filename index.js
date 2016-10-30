@@ -1,7 +1,7 @@
 const IDENTIFIER = 'createElement'
 
 var esutils = require('esutils')
-var groupProps = require('./lib/group-props')
+var groupProps = require('./lib/groupProps')
 
 module.exports = function (babel) {
   var t = babel.types
