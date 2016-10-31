@@ -8,7 +8,10 @@ module.exports = function (babel) {
     inherits: require('babel-plugin-syntax-jsx'),
     visitor: {
       JSXNamespacedName (path) {
-        throw path.buildCodeFrameError('Namespace tags are not supported. JSX is not XML.')
+        throw path.buildCodeFrameError(
+          'Namespaced tags/attributes are not supported. JSX is not XML.\n' +
+          'For attributes like xlink:href, use xlinkHref instead.'
+        )
       },
       JSXElement: {
         exit (path, file) {

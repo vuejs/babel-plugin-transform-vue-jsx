@@ -156,6 +156,14 @@ describe('babel-plugin-transform-vue-jsx', () => {
     expect(vnode.data.directives[0]).to.deep.equal({ name: 'test', value: 123 })
     expect(vnode.data.directives[1]).to.deep.equal({ name: 'other', value: 234 })
   })
+
+  it('xlink:href', () => {
+    const vnode = render(h => (
+      <use xlinkHref={'#name'}></use>
+    ))
+
+    expect(vnode.data.attrs['xlink:href']).to.equal('#name')
+  })
 })
 
 // helpers
