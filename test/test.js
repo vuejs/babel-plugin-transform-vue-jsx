@@ -164,6 +164,14 @@ describe('babel-plugin-transform-vue-jsx', () => {
 
     expect(vnode.data.attrs['xlink:href']).to.equal('#name')
   })
+
+  it('merge class', () => {
+    const vnode = render(h => (
+      <div class="a" {...{ class: 'b' }}/>
+    ))
+
+    expect(vnode.data.class).to.deep.equal({ a: true, b: true })
+  })
 })
 
 // helpers
