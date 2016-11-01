@@ -146,7 +146,7 @@ The merged data will be:
 
 ### Vue directives
 
-Note that built-in Vue directives are not supported when using JSX. In most cases there are obvious programmatic equivalents, for example `v-if` is just a ternary expression, and `v-for` is just an `array.map()` expression, etc.
+Note that almost all built-in Vue directives are not supported when using JSX, the sole exception being `v-show`, which can be used with the `v-show={value}` syntax. In most cases there are obvious programmatic equivalents, for example `v-if` is just a ternary expression, and `v-for` is just an `array.map()` expression, etc.
 
 For custom directives, you can use the `v-name={value}` syntax. However, note that directive arguments and modifiers are not supported using this syntax. There are two workarounds:
 
