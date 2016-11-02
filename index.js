@@ -54,12 +54,13 @@ function convertAttribute (babelTypes, node) {
 
 function buildOpeningElementAttributes (babelTypes, attributes, file) {
   var _props = []
-  var objs = []
+  var objectExpressionList = []
 
   function pushProps () {
-    if (!_props.length) return
-    objs.push(babelTypes.objectExpression(_props))
-    _props = []
+    if (_props.length) {
+      objectExpressionList.push(babelTypes.objectExpression(_props))
+      _props = []
+    }
   }
 
   while (attributes.length) {
@@ -67,7 +68,7 @@ function buildOpeningElementAttributes (babelTypes, attributes, file) {
     if (babelTypes.isJSXSpreadAttribute(prop)) {
       pushProps()
       prop.argument._isSpread = true
-      objs.push(prop.argument)
+      objectExpressionList.push(prop.argument)
     } else {
       _props.push(convertAttribute(babelTypes, prop))
     }
@@ -75,19 +76,20 @@ function buildOpeningElementAttributes (babelTypes, attributes, file) {
 
   pushProps()
 
-  objs = objs.map(function (o) {
-    return o._isSpread ? o : groupJSXProps(o.properties, babelTypes)
+  objectExpressionList = objectExpressionList.map(function (objectExpression) {
+    return objectExpression._isSpread
+      ? objectExpression
+      : groupJSXProps(objectExpression.properties, babelTypes)
   })
 
-  if (objs.length === 1) {
+  if (objectExpressionList.length === 1) {
     // only one object
-    attributes = objs[0]
-  } else if (objs.length) {
+    attributes = objectExpressionList[0]
+  } else if (objectExpressionList.length) {
     // spread it
-    attributes = mergeJSXProps(
-      babelTypes.arrayExpression(objs)
-    )
+    attributes = mergeJSXProps(objectExpressionList)
   }
+
   return attributes
 }
 
@@ -137,14 +139,9 @@ module.exports = function (babel) {
       },
       JSXElement: {
         exit (path, file) {
-          console.log('building')
           // turn tag into createElement call
           var callExpr = buildCallExp(babelTypes, path.get('openingElement'), file)
           var children = babelTypes.arrayExpression(path.node.children)
-
-          if (callExpr.arguments[1].properties) {
-            console.log(callExpr.arguments[1].properties)
-          }
 
           // add children array as 3rd arg
           callExpr.arguments.push(children)
