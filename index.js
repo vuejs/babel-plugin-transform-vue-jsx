@@ -1,7 +1,8 @@
 const esutils = require('esutils')
 const groupProps = require('./lib/groupProps')
+const mergeProps = require('./lib/mergeJSXProps')
 
-const IDENTIFIER = 'createElement'
+const IDENTIFIER = 'Vue.createElement'
 
 module.exports = function (babel) {
   var babelTypes = babel.types
