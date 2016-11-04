@@ -8,7 +8,7 @@ var vm = new Vue({
       alert('Hello Vue 2.0')
     }
   },
-  render (h) {
+  render () {
     const data = {
       attrs: {
         id: 'hehe'
