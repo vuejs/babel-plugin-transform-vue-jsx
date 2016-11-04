@@ -1,22 +1,20 @@
 const esutils = require('esutils')
 const groupJSXProps = require('./lib/groupJSXProps')
-const mergeJSXProps = require('./lib/mergeJSXProps')
-
 const IDENTIFIER = 'Vue.createElement'
 
-function convertJSXIdentifier (babelTypes, node, parent) {
-  if (babelTypes.isJSXIdentifier(node)) {
-    if (node.name === 'this' && babelTypes.isReferenced(node, parent)) {
-      return babelTypes.thisExpression()
+function convertJSXIdentifier (t, node, parent) {
+  if (t.isJSXIdentifier(node)) {
+    if (node.name === 'this' && t.isReferenced(node, parent)) {
+      return t.thisExpression()
     } else if (esutils.keyword.isIdentifierNameES6(node.name)) {
       node.type = 'Identifier'
     } else {
-      return babelTypes.stringLiteral(node.name)
+      return t.stringLiteral(node.name)
     }
-  } else if (babelTypes.isJSXMemberExpression(node)) {
-    return babelTypes.memberExpression(
-      convertJSXIdentifier(babelTypes, node.object, node),
-      convertJSXIdentifier(babelTypes, node.property, node)
+  } else if (t.isJSXMemberExpression(node)) {
+    return t.memberExpression(
+      convertJSXIdentifier(t, node.object, node),
+      convertJSXIdentifier(t, node.property, node)
     )
   }
   return node
@@ -29,48 +27,48 @@ function convertJSXIdentifier (babelTypes, node, parent) {
  * all prior attributes to an array for later processing.
  */
 
-function convertAttribute (babelTypes, node) {
-  var nodeValue = node.value || babelTypes.booleanLiteral(true)
+function convertAttribute (t, node) {
+  var nodeValue = node.value || t.booleanLiteral(true)
 
-  var value = babelTypes.isJSXExpressionContainer(nodeValue)
+  var value = t.isJSXExpressionContainer(nodeValue)
     ? nodeValue.expression
     : nodeValue
 
-  if (babelTypes.isStringLiteral(value) && !babelTypes.isJSXExpressionContainer(node.value)) {
+  if (t.isStringLiteral(value) && !t.isJSXExpressionContainer(node.value)) {
     value.value = value.value.replace(/\n\s+/g, ' ')
   }
 
-  if (babelTypes.isValidIdentifier(node.name.name)) {
+  if (t.isValidIdentifier(node.name.name)) {
     node.name.type = 'Identifier'
   } else {
-    node.name = babelTypes.stringLiteral(node.name.name)
+    node.name = t.stringLiteral(node.name.name)
   }
 
-  return babelTypes.inherits(
-    babelTypes.objectProperty(node.name, value),
+  return t.inherits(
+    t.objectProperty(node.name, value),
     node
   )
 }
 
-function buildOpeningElementAttributes (babelTypes, attributes, file) {
+function buildOpeningElementAttributes (t, attributes, file) {
   var _props = []
   var objectExpressionList = []
 
   function pushProps () {
     if (_props.length) {
-      objectExpressionList.push(babelTypes.objectExpression(_props))
+      objectExpressionList.push(t.objectExpression(_props))
       _props = []
     }
   }
 
   while (attributes.length) {
     var prop = attributes.shift()
-    if (babelTypes.isJSXSpreadAttribute(prop)) {
+    if (t.isJSXSpreadAttribute(prop)) {
       pushProps()
       prop.argument._isSpread = true
       objectExpressionList.push(prop.argument)
     } else {
-      _props.push(convertAttribute(babelTypes, prop))
+      _props.push(convertAttribute(t, prop))
     }
   }
 
@@ -79,57 +77,61 @@ function buildOpeningElementAttributes (babelTypes, attributes, file) {
   objectExpressionList = objectExpressionList.map(function (objectExpression) {
     return objectExpression._isSpread
       ? objectExpression
-      : groupJSXProps(objectExpression.properties, babelTypes)
+      : groupJSXProps(objectExpression.properties, t)
   })
 
   if (objectExpressionList.length === 1) {
     // only one object
     attributes = objectExpressionList[0]
   } else if (objectExpressionList.length) {
+    // add prop merging helper
+    file.addImport('babel-helper-vue-jsx-merge-props', 'default', '_mergeJSXProps')
     // spread it
-    attributes = mergeJSXProps(objectExpressionList)
+    attributes = t.callExpression(
+      t.identifier('_mergeJSXProps'),
+      [t.arrayExpression(objectExpressionList)]
+    )
   }
 
   return attributes
 }
 
-function buildCallExp (babelTypes, path, file) {
+function buildCallExp (t, path, file) {
   var attributes = path.node.attributes
-  var tagExpr = convertJSXIdentifier(babelTypes, path.node.name, path.node)
+  var tagExpr = convertJSXIdentifier(t, path.node.name, path.node)
   var args = []
   var tagName
 
-  path.parent.children = babelTypes.react.buildChildren(path.parent)
+  path.parent.children = t.react.buildChildren(path.parent)
 
-  if (babelTypes.isIdentifier(tagExpr)) {
+  if (t.isIdentifier(tagExpr)) {
     tagName = tagExpr.name
-  } else if (babelTypes.isLiteral(tagExpr)) {
+  } else if (t.isLiteral(tagExpr)) {
     tagName = tagExpr.value
   }
 
-  if (babelTypes.react.isCompatTag(tagName)) {
-    args.push(babelTypes.stringLiteral(tagName))
+  if (t.react.isCompatTag(tagName)) {
+    args.push(t.stringLiteral(tagName))
   } else {
     args.push(tagExpr)
   }
 
   if (attributes.length) {
-    attributes = buildOpeningElementAttributes(babelTypes, attributes, file)
+    attributes = buildOpeningElementAttributes(t, attributes, file)
   } else {
-    attributes = babelTypes.nullLiteral()
+    attributes = t.nullLiteral()
   }
 
   args.push(attributes)
 
-  return babelTypes.callExpression(
-    babelTypes.identifier(IDENTIFIER),
+  return t.callExpression(
+    t.identifier(IDENTIFIER),
     args
   )
 }
 
 module.exports = function (babel) {
-  console.log('starting transform')
-  var babelTypes = babel.types
+  var t = babel.types
 
   return {
     inherits: require('babel-plugin-syntax-jsx'),
@@ -140,8 +142,8 @@ module.exports = function (babel) {
       JSXElement: {
         exit (path, file) {
           // turn tag into createElement call
-          var callExpr = buildCallExp(babelTypes, path.get('openingElement'), file)
-          var children = babelTypes.arrayExpression(path.node.children)
+          var callExpr = buildCallExp(t, path.get('openingElement'), file)
+          var children = t.arrayExpression(path.node.children)
 
           // add children array as 3rd arg
           callExpr.arguments.push(children)
@@ -151,7 +153,7 @@ module.exports = function (babel) {
           }
 
           path.replaceWith(
-            babelTypes.inherits(callExpr, path.node)
+            t.inherits(callExpr, path.node)
           )
         }
       }
