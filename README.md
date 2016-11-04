@@ -11,11 +11,7 @@
 ### Usage
 
 ``` bash
-npm install\
-  babel-plugin-syntax-jsx\
-  babel-plugin-transform-vue-jsx\
-  babel-helper-vue-jsx-merge-props\
-  --save-dev
+npm i -S babel-plugin-syntax-jsx babel-plugin-transform-vue-jsx
 ```
 
 In your `.babelrc`:
@@ -36,21 +32,11 @@ The plugin transpiles the following JSX:
 To the following JavaScript:
 
 ``` js
-h('div', {
+Vue.createElement('div', {
   attrs: {
     id: 'foo'
   }
 }, [this.text])
-```
-
-Note the `h` function, which is a shorthand for a Vue instance's `$createElement` method, must be in the scope where the JSX is. Since this method is passed to component render functions as the first argument, in most cases you'd do this:
-
-``` js
-Vue.component('jsx-example', {
-  render (h) { // <-- h must be in scope
-    return <div id="foo">bar</div>
-  }
-})
 ```
 
 ### Difference from React JSX
@@ -58,8 +44,8 @@ Vue.component('jsx-example', {
 First, Vue 2.0's vnode format is different from React's. The second argument to the `createElement` call is a "data object" that accepts nested objects. Each nested object will be then processed by corresponding modules:
 
 ``` js
-render (h) {
-  return h('div', {
+render () {
+  return Vue.createElement('div', {
     // Component props
     props: {
       msg: 'hi'
@@ -106,16 +92,16 @@ render (h) {
 The equivalent of the above in Vue 2.0 JSX is:
 
 ``` jsx
-render (h) {
+render () {
   return (
     <div
       // normal attributes or component props.
       id="foo"
-      // DOM properties are prefixed with domProps-
-      domProps-innerHTML="bar"
-      // event listeners are prefixed with on- or nativeOn-
-      on-click={this.clickHandler}
-      nativeOn-click={this.nativeClickHandler}
+      // DOM properties are prefixed with domProps
+      domPropsInnerHTML="bar"
+      // event listeners are prefixed with on or nativeOn
+      onClick={this.clickHandler}
+      nativeOnClick={this.nativeClickHandler}
       // other special top-level properties
       class={{ foo: true, bar: false }}
       style={{ color: 'red', fontSize: '14px' }}

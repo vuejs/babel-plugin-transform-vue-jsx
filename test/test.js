@@ -1,34 +1,53 @@
-import { expect } from 'chai'
-import Vue from 'vue'
+const expect = require('chai').expect
+const Vue = require('vue')
+
+// helpers
+
+function render (render) {
+  return new Vue({ render })._render()
+}
+
+function createComponentInstanceForVnode (vnode) {
+  const opts = vnode.componentOptions
+  return new opts.Ctor({
+    _isComponent: true,
+    parent: opts.parent,
+    propsData: opts.propsData,
+    _componentTag: opts.tag,
+    _parentVnode: vnode,
+    _parentListeners: opts.listeners,
+    _renderChildren: opts.children
+  })
+}
 
 describe('babel-plugin-transform-vue-jsx', () => {
   it('should contain text', () => {
-    const vnode = render(h => <div>test</div>)
+    const vnode = <div>test</div>
     expect(vnode.tag).to.equal('div')
     expect(vnode.children[0].text).to.equal('test')
   })
 
   it('should bind text', () => {
     const text = 'foo'
-    const vnode = render(h => <div>{text}</div>)
+    const vnode = <div>{text}</div>
     expect(vnode.tag).to.equal('div')
     expect(vnode.children[0].text).to.equal('foo')
   })
 
   it('should extract attrs', () => {
-    const vnode = render(h => <div id="hi" dir="ltr"></div>)
+    const vnode = <div id="hi" dir="ltr"></div>
     expect(vnode.data.attrs.id).to.equal('hi')
     expect(vnode.data.attrs.dir).to.equal('ltr')
   })
 
   it('should bind attr', () => {
     const id = 'foo'
-    const vnode = render(h => <div id={id}></div>)
+    const vnode = <div id={id}></div>
     expect(vnode.data.attrs.id).to.equal('foo')
   })
 
   it('should handle top-level special attrs', () => {
-    const vnode = render(h => (
+    const vnode = (
       <div
         class="foo"
         style="bar"
@@ -36,7 +55,7 @@ describe('babel-plugin-transform-vue-jsx', () => {
         ref="ref"
         slot="slot">
       </div>
-    ))
+    )
     expect(vnode.data.class).to.equal('foo')
     expect(vnode.data.style).to.equal('bar')
     expect(vnode.data.key).to.equal('key')
@@ -46,14 +65,14 @@ describe('babel-plugin-transform-vue-jsx', () => {
 
   it('should handle nested properties', () => {
     const noop = _ => _
-    const vnode = render(h => (
+    const vnode = (
       <div
-        on-click={noop}
-        on-kebab-case={noop}
-        domProps-innerHTML="<p>hi</p>"
-        hook-insert={noop}>
+        onClick={noop}
+        onKebab-case={noop}
+        domPropsInnerHTML="<p>hi</p>"
+        hookInsert={noop}>
       </div>
-    ))
+    )
     expect(vnode.data.on.click).to.equal(noop)
     expect(vnode.data.on['kebab-case']).to.equal(noop)
     expect(vnode.data.domProps.innerHTML).to.equal('<p>hi</p>')
@@ -61,35 +80,33 @@ describe('babel-plugin-transform-vue-jsx', () => {
   })
 
   it('should support data attributes', () => {
-    const vnode = render(h => (
-      <div data-id="1"></div>
-    ))
+    const vnode = <div data-id="1"></div>
     expect(vnode.data.attrs['data-id']).to.equal('1')
   })
 
   it('should handle identifier tag name as components', () => {
     const Test = {}
-    const vnode = render(h => <Test/>)
+    const vnode = <Test/>
     expect(vnode.tag).to.contain('vue-component')
   })
 
   it('should work for components with children', () => {
     const Test = {}
-    const vnode = render(h => <Test><div>hi</div></Test>)
+    const vnode = <Test><div>hi</div></Test>
     const children = vnode.componentOptions.children
     expect(children[0].tag).to.equal('div')
   })
 
   it('should bind things in thunk with correct this context', () => {
     const Test = {
-      render (h) {
+      render () {
         return <div>{this.$slots.default}</div>
       }
     }
     const context = { test: 'foo' }
-    const vnode = render((function (h) {
+    const vnode = function () {
       return <Test>{this.test}</Test>
-    }).bind(context))
+    }.bind(context)()
     const vm = createComponentInstanceForVnode(vnode)
     const childVnode = vm._render()
     expect(childVnode.tag).to.equal('div')
@@ -100,9 +117,7 @@ describe('babel-plugin-transform-vue-jsx', () => {
     const props = {
       innerHTML: 2
     }
-    const vnode = render(h => (
-      <div {...{ props }}/>
-    ))
+    const vnode = <div {...{ props }}/>
     expect(vnode.data.props.innerHTML).to.equal(2)
   })
 
@@ -127,13 +142,13 @@ describe('babel-plugin-transform-vue-jsx', () => {
       },
       class: ['a', 'b']
     }
-    const vnode = render(h => (
+    const vnode = (
       <div href="huhu"
         {...data}
         class={{ c: true }}
-        on-click={() => calls.push(2)}
-        hook-insert={() => calls.push(4)} />
-    ))
+        onClick={() => calls.push(2)}
+        hookInsert={() => calls.push(4)} />
+    )
 
     expect(vnode.data.attrs.id).to.equal('hehe')
     expect(vnode.data.attrs.href).to.equal('huhu')
@@ -148,9 +163,7 @@ describe('babel-plugin-transform-vue-jsx', () => {
   })
 
   it('custom directives', () => {
-    const vnode = render(h => (
-      <div v-test={ 123 } v-other={ 234 } />
-    ))
+    const vnode = <div vTest={ 123 } vOther={ 234 } />
 
     expect(vnode.data.directives.length).to.equal(2)
     expect(vnode.data.directives[0]).to.deep.equal({ name: 'test', value: 123 })
@@ -173,24 +186,3 @@ describe('babel-plugin-transform-vue-jsx', () => {
     expect(vnode.data.class).to.deep.equal({ a: true, b: true })
   })
 })
-
-// helpers
-
-function render (render) {
-  return new Vue({
-    render
-  })._render()
-}
-
-function createComponentInstanceForVnode (vnode) {
-  const opts = vnode.componentOptions
-  return new opts.Ctor({
-    _isComponent: true,
-    parent: opts.parent,
-    propsData: opts.propsData,
-    _componentTag: opts.tag,
-    _parentVnode: vnode,
-    _parentListeners: opts.listeners,
-    _renderChildren: opts.children
-  })
-}
