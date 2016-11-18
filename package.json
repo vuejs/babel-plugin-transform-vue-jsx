@@ -10,7 +10,7 @@
   "scripts": {
     "lint": "eslint index.js",
     "test": "npm run lint && mocha --compilers js:babel-register",
-    "build": "cd example && webpack"
+    "dev": "cd example && webpack --watch"
   },
   "repository": {
     "type": "git",

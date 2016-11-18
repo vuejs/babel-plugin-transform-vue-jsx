@@ -60,6 +60,22 @@ describe('babel-plugin-transform-vue-jsx', () => {
     expect(vnode.data.hook.insert).to.equal(noop)
   })
 
+  it('should handle nested properties (camelCase)', () => {
+    const noop = _ => _
+    const vnode = render(h => (
+      <div
+        onClick={noop}
+        onCamelCase={noop}
+        domPropsInnerHTML="<p>hi</p>"
+        hookInsert={noop}>
+      </div>
+    ))
+    expect(vnode.data.on.click).to.equal(noop)
+    expect(vnode.data.on.camelCase).to.equal(noop)
+    expect(vnode.data.domProps.innerHTML).to.equal('<p>hi</p>')
+    expect(vnode.data.hook.insert).to.equal(noop)
+  })
+
   it('should support data attributes', () => {
     const vnode = render(h => (
       <div data-id="1"></div>
