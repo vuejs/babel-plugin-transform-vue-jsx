@@ -127,6 +127,20 @@ render (h) {
 }
 ```
 
+### Component Tip
+
+If a custom element starts with lowercase, it will be treated as a string id and used to lookup a registered component. If it starts with uppercase, it will be treated as an identifier, which allows you to do:
+
+``` js
+import Todo from './Todo.js'
+
+export default {
+  render (h) {
+    return <Todo/> // no need to register Todo via components option
+  }
+}
+```
+
 ### JSX Spread
 
 JSX spread is supported, and this plugin will intelligently merge nested data properties. For example:
