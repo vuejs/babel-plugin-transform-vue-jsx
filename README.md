@@ -111,9 +111,9 @@ render (h) {
     <div
       // normal attributes or component props.
       id="foo"
-      // DOM properties are prefixed with domProps-
+      // DOM properties are prefixed with `domProps`
       domPropsInnerHTML="bar"
-      // event listeners are prefixed with on- or nativeOn-
+      // event listeners are prefixed with `on` or `nativeOn`
       onClick={this.clickHandler}
       nativeOnClick={this.nativeClickHandler}
       // other special top-level properties
