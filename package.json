@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-transform-vue-jsx",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "description": "Babel plugin for Vue 2.0 JSX",
   "main": "index.js",
   "files": [
