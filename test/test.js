@@ -34,6 +34,7 @@ describe('babel-plugin-transform-vue-jsx', () => {
         style="bar"
         key="key"
         ref="ref"
+        refInFor
         slot="slot">
       </div>
     ))
@@ -41,6 +42,7 @@ describe('babel-plugin-transform-vue-jsx', () => {
     expect(vnode.data.style).to.equal('bar')
     expect(vnode.data.key).to.equal('key')
     expect(vnode.data.ref).to.equal('ref')
+    expect(vnode.data.refInFor).to.be.true
     expect(vnode.data.slot).to.equal('slot')
   })
 

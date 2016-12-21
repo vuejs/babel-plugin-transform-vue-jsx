@@ -98,6 +98,8 @@ render (h) {
     // other special top-level properties
     key: 'key',
     ref: 'ref',
+    // assign the `ref` is used on elements/components with v-for
+    refInFor: true,
     slot: 'slot'
   })
 }
@@ -121,6 +123,8 @@ render (h) {
       style={{ color: 'red', fontSize: '14px' }}
       key="key"
       ref="ref"
+      // assign the `ref` is used on elements/components with v-for
+      refInFor
       slot="slot">
     </div>
   )
