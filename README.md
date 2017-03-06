@@ -179,3 +179,37 @@ const directives = [
 
 return <div {...{ directives }}/>
 ```
+
+### Custom JSX pragma
+
+You can specify a pragma other than `h` using the `jsx` option. For example:
+
+```json
+{
+  "presets": ["es2015"],
+  "plugins": [
+    ["transform-vue-jsx", { "jsx": "this.$createElement" }]
+  ]
+}
+```
+
+Now you don't need a specific `h`, and you can write jsx anywhere.
+
+```js
+{
+  render () {
+    return (
+      <div>
+        <span>Hello, </span>
+        { this.renderText() }
+      </div>
+    )
+  },
+
+  methods: {
+    renderText () {
+      return <span>Vue</span>
+    }
+  }
+}
+```
