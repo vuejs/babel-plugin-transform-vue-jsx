@@ -25,33 +25,37 @@ module.exports = function (babel) {
           path.replaceWith(t.inherits(callExpr, path.node))
         }
       },
-      'ObjectMethod|ClassMethod' (path) {
-        // do nothing if there is (h) param
-        if (path.get('params').length) {
-          return
-        }
-        // do nothing if there is no JSX inside
-        const jsxChecker = {
-          hasJsx: false
-        }
+      'ObjectExpression|ClassDeclaration' (path) {
         path.traverse({
-          JSXElement () {
-            this.hasJsx = true
+          'ObjectMethod|ClassMethod' (path) {
+            // do nothing if there is (h) param
+            if (path.get('params').length) {
+              return
+            }
+            // do nothing if there is no JSX inside
+            const jsxChecker = {
+              hasJsx: false
+            }
+            path.traverse({
+              JSXElement () {
+                this.hasJsx = true
+              }
+            }, jsxChecker)
+            if (!jsxChecker.hasJsx) {
+              return
+            }
+            // prepend const h = this.$createElement otherwise
+            path.get('body').unshiftContainer('body', t.variableDeclaration('const', [
+              t.variableDeclarator(
+                t.identifier('h'),
+                t.memberExpression(
+                  t.thisExpression(),
+                  t.identifier('$createElement')
+                )
+              )
+            ]))
           }
-        }, jsxChecker)
-        if (!jsxChecker.hasJsx) {
-          return
-        }
-        // prepend const h = this.$createElement otherwise
-        path.get('body').unshiftContainer('body', t.variableDeclaration('const', [
-          t.variableDeclarator(
-            t.identifier('h'),
-            t.memberExpression(
-              t.thisExpression(),
-              t.identifier('$createElement')
-            )
-          )
-        ]))
+        })
       }
     }
   }
