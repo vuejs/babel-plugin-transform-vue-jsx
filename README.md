@@ -53,6 +53,8 @@ Vue.component('jsx-example', {
 })
 ```
 
+Starting with version 3.4.0 we automatically inject `const h = this.$createElement` in any method and getter that has JSX so you can drop the `(h)` parameter.
+
 ### Difference from React JSX
 
 First, Vue 2.0's vnode format is different from React's. The second argument to the `createElement` call is a "data object" that accepts nested objects. Each nested object will be then processed by corresponding modules:
