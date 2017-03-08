@@ -53,7 +53,22 @@ Vue.component('jsx-example', {
 })
 ```
 
-Starting with version 3.4.0 we automatically inject `const h = this.$createElement` in any method and getter that has JSX so you can drop the `(h)` parameter.
+### `h` auto-injection
+
+Starting with version 3.4.0 we automatically inject `const h = this.$createElement` in any method and getter declared in ES2015 syntax that has JSX so you can drop the `(h)` parameter.
+
+``` js
+Vue.component('jsx-example', {
+  render () { // h will be injected
+    return <div id="foo">bar</div>
+  },
+  myMethod: function () { // h will not be injected
+    return <div id="foo">bar</div>
+  }
+})
+```
+
+**Important** `h` does not inject into functions or arrow functions, it works only in ES2015 Method Properties declaration.
 
 ### Difference from React JSX
 
