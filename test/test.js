@@ -190,6 +190,59 @@ describe('babel-plugin-transform-vue-jsx', () => {
 
     expect(vnode.data.class).to.deep.equal({ a: true, b: true })
   })
+
+  it('h self-defining in object methods', () => {
+    const obj = {
+      render () {
+        return <div>test</div>
+      }
+    }
+    const vnode = render(h => obj.render.call({ $createElement: h }))
+    expect(vnode.tag).to.equal('div')
+    expect(vnode.children[0].text).to.equal('test')
+  })
+
+  it('h self-defining in object getters', () => {
+    const obj = {
+      get render () {
+        return <div>test</div>
+      }
+    }
+    const vnode = render(h => {
+      obj.$createElement = h
+      return obj.render
+    })
+    expect(vnode.tag).to.equal('div')
+    expect(vnode.children[0].text).to.equal('test')
+  })
+
+  it('h self-defining in class methods', () => {
+    class Test {
+      constructor (h) {
+        this.$createElement = h
+      }
+      render () {
+        return <div>test</div>
+      }
+    }
+    const vnode = render(h => (new Test(h)).render())
+    expect(vnode.tag).to.equal('div')
+    expect(vnode.children[0].text).to.equal('test')
+  })
+
+  it('h self-defining in class getters', () => {
+    class Test {
+      constructor (h) {
+        this.$createElement = h
+      }
+      get render () {
+        return <div>test</div>
+      }
+    }
+    const vnode = render(h => (new Test(h)).render)
+    expect(vnode.tag).to.equal('div')
+    expect(vnode.children[0].text).to.equal('test')
+  })
 })
 
 // helpers
