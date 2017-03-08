@@ -28,8 +28,9 @@ module.exports = function (babel) {
       'ObjectExpression|ClassDeclaration' (path) {
         path.traverse({
           'ObjectMethod|ClassMethod' (path) {
+            const params = path.get('params')
             // do nothing if there is (h) param
-            if (path.get('params').length) {
+            if (params.length && params[0].node.name === 'h') {
               return
             }
             // do nothing if there is no JSX inside

@@ -243,6 +243,20 @@ describe('babel-plugin-transform-vue-jsx', () => {
     expect(vnode.tag).to.equal('div')
     expect(vnode.children[0].text).to.equal('test')
   })
+
+  it('h self-defining in methods with parameters', () => {
+    class Test {
+      constructor (h) {
+        this.$createElement = h
+      }
+      render (notH) {
+        return <div>{notH}</div>
+      }
+    }
+    const vnode = render(h => (new Test(h)).render('test'))
+    expect(vnode.tag).to.equal('div')
+    expect(vnode.children[0].text).to.equal('test')
+  })
 })
 
 // helpers
