@@ -45,6 +45,20 @@ module.exports = function (babel) {
             if (!jsxChecker.hasJsx) {
               return
             }
+            // do nothing if `h` is already defined in this method
+            const hChecker = {
+              hasH: false
+            }
+            path.traverse({
+              VariableDeclarator (path) {
+                if (path.node && path.node.id && path.node.id.name === 'h') {
+                  this.hasH = true
+                }
+              }
+            }, hChecker)
+            if (hChecker.hasH) {
+              return
+            }
             // prepend const h = this.$createElement otherwise
             path.get('body').unshiftContainer('body', t.variableDeclaration('const', [
               t.variableDeclarator(
