@@ -25,7 +25,7 @@ module.exports = function (babel) {
           path.replaceWith(t.inherits(callExpr, path.node))
         }
       },
-      'ObjectExpression|ClassDeclaration' (path) {
+      'Program' (path) {
         path.traverse({
           'ObjectMethod|ClassMethod' (path) {
             const params = path.get('params')

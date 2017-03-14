@@ -216,6 +216,22 @@ describe('babel-plugin-transform-vue-jsx', () => {
     expect(vnode.children[0].text).to.equal('test')
   })
 
+  it('h self-defining in multi-level object getters', () => {
+    const obj = {
+      inherited: {
+        get render () {
+          return <div>test</div>
+        }
+      }
+    }
+    const vnode = render(h => {
+      obj.inherited.$createElement = h
+      return obj.inherited.render
+    })
+    expect(vnode.tag).to.equal('div')
+    expect(vnode.children[0].text).to.equal('test')
+  })
+
   it('h self-defining in class methods', () => {
     class Test {
       constructor (h) {
