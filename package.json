@@ -3,15 +3,18 @@
   "version": "3.4.1",
   "description": "Babel plugin for Vue 2.0 JSX",
   "main": "index.js",
+  "unpkg": "dist/babel-plugin-transform-vue-jsx.min.js",
   "files": [
     "index.js",
-    "lib"
+    "lib",
+    "dist"
   ],
   "scripts": {
     "lint": "eslint index.js",
     "test": "npm run lint && mocha --compilers js:babel-register",
     "dev": "cd example && webpack --watch",
-    "build": "webpack -p index.js dist/babel-plugin-transform-vue-jsx.min.js --target=web --output-library=babel-plugin-transform-vue-jsx --output-library-target=umd --module-bind 'js=babel-loader'"
+    "build": "webpack -p index.js dist/babel-plugin-transform-vue-jsx.min.js --target=web --output-library=babel-plugin-transform-vue-jsx --output-library-target=umd --module-bind 'js=babel-loader'",
+    "prepubish": "npm run build"
   },
   "repository": {
     "type": "git",

@@ -1,3 +1,4 @@
 .DS_Store
 node_modules
 example/example.build.js
+dist
