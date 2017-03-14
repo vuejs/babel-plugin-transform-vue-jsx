@@ -147,10 +147,10 @@ module.exports = function (babel) {
       attribs = objs[0]
     } else if (objs.length) {
       // add prop merging helper
-      file.addImport('babel-helper-vue-jsx-merge-props', 'default', '_mergeJSXProps')
+      var helper = file.addImport('babel-helper-vue-jsx-merge-props', 'default', '_mergeJSXProps')
       // spread it
       attribs = t.callExpression(
-        t.identifier('_mergeJSXProps'),
+        helper,
         [t.arrayExpression(objs)]
       )
     }
