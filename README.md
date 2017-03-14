@@ -79,8 +79,6 @@ class App extends Vue {
 }
 ```
 
-**Important** Other babel transforms can affect the methods declaration. In order to use `h` auto-injection you need to use `transform-vue-jsx` before any other transform like `transform-class-properties` that affects methods declaration.
-
 ### Difference from React JSX
 
 First, Vue 2.0's vnode format is different from React's. The second argument to the `createElement` call is a "data object" that accepts nested objects. Each nested object will be then processed by corresponding modules:
