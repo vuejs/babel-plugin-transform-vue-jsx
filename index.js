@@ -96,7 +96,7 @@ module.exports = function (babel) {
     }
     args.push(attribs)
 
-    return t.callExpression(t.identifier('h'), args)
+    return t.callExpression(t.identifier(file.opts.jsx || 'h'), args)
   }
 
   function convertJSXIdentifier (node, parent) {
