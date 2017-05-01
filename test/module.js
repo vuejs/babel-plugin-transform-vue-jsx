@@ -1,0 +1,1 @@
+export const functional = ({ props }) => <div>{props.msg}</div>
