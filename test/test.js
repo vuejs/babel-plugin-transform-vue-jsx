@@ -1,5 +1,6 @@
 import { expect } from 'chai'
 import Vue from 'vue'
+import { functional } from './module'
 
 describe('babel-plugin-transform-vue-jsx', () => {
   it('should contain text', () => {
@@ -270,6 +271,13 @@ describe('babel-plugin-transform-vue-jsx', () => {
       }
     }
     const vnode = render(h => (new Test(h)).render('test'))
+    expect(vnode.tag).to.equal('div')
+    expect(vnode.children[0].text).to.equal('test')
+  })
+
+  it('syntactic sugar in exported functional components', () => {
+    const vnode = render(h => functional.render(h, { props: { msg: 'test' } }))
+    expect(functional.functional).to.equal(true)
     expect(vnode.tag).to.equal('div')
     expect(vnode.children[0].text).to.equal('test')
   })
