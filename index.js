@@ -82,11 +82,12 @@ module.exports = function (babel) {
       tagName = tagExpr.value
     }
 
-    if (t.react.isCompatTag(tagName)) {
-      args.push(t.stringLiteral(tagName))
-    } else {
-      args.push(tagExpr)
-    }
+    // Fixes upper cased component names not being converted to a stringLiteral
+    // 't.react.isCompatTag' seems to just check whether or not a tag is
+    // lowercased it may be a good idea to just convert anything that comes 
+    // in here to a string, since they are declared as strings when creating
+    // the components
+    args.push(t.stringLiteral(tagName))
 
     var attribs = path.node.attributes
     if (attribs.length) {
