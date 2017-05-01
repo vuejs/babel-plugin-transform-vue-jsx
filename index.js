@@ -45,13 +45,22 @@ module.exports = function (babel) {
             if (!jsxChecker.hasJsx) {
               return
             }
-            // prepend const h = this.$createElement otherwise
+            const isRender = path.node.key.name === 'render'
+            // inject h otherwise
             path.get('body').unshiftContainer('body', t.variableDeclaration('const', [
               t.variableDeclarator(
                 t.identifier('h'),
-                t.memberExpression(
-                  t.thisExpression(),
-                  t.identifier('$createElement')
+                (
+                  isRender
+                    ? t.memberExpression(
+                      t.identifier('arguments'),
+                      t.numericLiteral(0),
+                      true
+                    )
+                    : t.memberExpression(
+                      t.thisExpression(),
+                      t.identifier('$createElement')
+                    )
                 )
               )
             ]))

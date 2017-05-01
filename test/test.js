@@ -193,24 +193,24 @@ describe('babel-plugin-transform-vue-jsx', () => {
 
   it('h self-defining in object methods', () => {
     const obj = {
-      render () {
+      method () {
         return <div>test</div>
       }
     }
-    const vnode = render(h => obj.render.call({ $createElement: h }))
+    const vnode = render(h => obj.method.call({ $createElement: h }))
     expect(vnode.tag).to.equal('div')
     expect(vnode.children[0].text).to.equal('test')
   })
 
   it('h self-defining in object getters', () => {
     const obj = {
-      get render () {
+      get computed () {
         return <div>test</div>
       }
     }
     const vnode = render(h => {
       obj.$createElement = h
-      return obj.render
+      return obj.computed
     })
     expect(vnode.tag).to.equal('div')
     expect(vnode.children[0].text).to.equal('test')
@@ -219,14 +219,14 @@ describe('babel-plugin-transform-vue-jsx', () => {
   it('h self-defining in multi-level object getters', () => {
     const obj = {
       inherited: {
-        get render () {
+        get computed () {
           return <div>test</div>
         }
       }
     }
     const vnode = render(h => {
       obj.inherited.$createElement = h
-      return obj.inherited.render
+      return obj.inherited.computed
     })
     expect(vnode.tag).to.equal('div')
     expect(vnode.children[0].text).to.equal('test')
@@ -241,7 +241,7 @@ describe('babel-plugin-transform-vue-jsx', () => {
         return <div>test</div>
       }
     }
-    const vnode = render(h => (new Test(h)).render())
+    const vnode = render(h => (new Test(h)).render(h))
     expect(vnode.tag).to.equal('div')
     expect(vnode.children[0].text).to.equal('test')
   })
@@ -251,11 +251,11 @@ describe('babel-plugin-transform-vue-jsx', () => {
       constructor (h) {
         this.$createElement = h
       }
-      get render () {
+      get computed () {
         return <div>test</div>
       }
     }
-    const vnode = render(h => (new Test(h)).render)
+    const vnode = render(h => (new Test(h)).computed)
     expect(vnode.tag).to.equal('div')
     expect(vnode.children[0].text).to.equal('test')
   })
@@ -265,11 +265,11 @@ describe('babel-plugin-transform-vue-jsx', () => {
       constructor (h) {
         this.$createElement = h
       }
-      render (notH) {
+      notRender (notH) {
         return <div>{notH}</div>
       }
     }
-    const vnode = render(h => (new Test(h)).render('test'))
+    const vnode = render(h => (new Test(h)).notRender('test'))
     expect(vnode.tag).to.equal('div')
     expect(vnode.children[0].text).to.equal('test')
   })
