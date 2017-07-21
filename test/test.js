@@ -273,6 +273,18 @@ describe('babel-plugin-transform-vue-jsx', () => {
     expect(vnode.tag).to.equal('div')
     expect(vnode.children[0].text).to.equal('test')
   })
+
+  it('should handle special properties', () => {
+    const noop = _ => _
+    const vnode = render(h => (
+      <input value="value" />
+    ))
+    expect(vnode.data.domProps.value).to.equal('value')
+    const vnode2 = render(h => (
+      <input value="value" type="button" />
+    ))
+    expect(vnode2.data.domProps).to.equal(undefined)
+  })
 })
 
 // helpers
