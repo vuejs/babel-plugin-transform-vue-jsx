@@ -81,7 +81,7 @@ module.exports = function (babel) {
 
               const attr = attribute.node.name
 
-              if (mustUseProp(tag, type, attr)) {
+              if (mustUseProp(tag, type, attr) && t.isJSXExpressionContainer(attributePath.node.value)) {
                 attribute.replaceWith(t.JSXIdentifier(`domProps-${attr}`))
               }
             })
