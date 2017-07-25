@@ -273,6 +273,20 @@ describe('babel-plugin-transform-vue-jsx', () => {
     expect(vnode.tag).to.equal('div')
     expect(vnode.children[0].text).to.equal('test')
   })
+
+  it('should handle special attrs properties', () => {
+    const vnode = render(h => (
+      <input value="value" />
+    ))
+    expect(vnode.data.attrs.value).to.equal('value')
+  })
+
+  it('should handle special domProps properties', () => {
+    const vnode = render(h => (
+      <input value={'some jsx expression'} />
+    ))
+    expect(vnode.data.domProps.value).to.equal('some jsx expression')
+  })
 })
 
 // helpers
