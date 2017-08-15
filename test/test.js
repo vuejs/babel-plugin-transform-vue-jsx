@@ -27,6 +27,12 @@ describe('babel-plugin-transform-vue-jsx', () => {
     expect(vnode.data.attrs.id).to.equal('foo')
   })
 
+  it('should omit children argument if possible', () => {
+    const vnode = render(h => <div />)
+    const children = vnode.children
+    expect(children).to.equal(undefined)
+  })
+
   it('should handle top-level special attrs', () => {
     const vnode = render(h => (
       <div
