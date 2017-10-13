@@ -18,7 +18,7 @@ module.exports = function (babel) {
         exit (path, file) {
           // turn tag into createElement call
           var callExpr = buildElementCall(path.get('openingElement'), file)
-          // add children array as 3rd 
+          // add children array as 3rd arg
           if (path.node.children.length > 0) {
             callExpr.arguments.push(t.arrayExpression(path.node.children))
           }
