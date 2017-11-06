@@ -15,7 +15,7 @@ npm install\
   babel-plugin-syntax-jsx\
   babel-plugin-transform-vue-jsx\
   babel-helper-vue-jsx-merge-props\
-  babel-preset-es2015\
+  babel-preset-env\
   --save-dev
 ```
 
@@ -23,7 +23,7 @@ In your `.babelrc`:
 
 ``` json
 {
-  "presets": ["es2015"],
+  "presets": ["env"],
   "plugins": ["transform-vue-jsx"]
 }
 ```
