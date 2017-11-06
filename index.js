@@ -18,10 +18,12 @@ module.exports = function (babel) {
         exit (path, file) {
           // turn tag into createElement call
           var callExpr = buildElementCall(path.get('openingElement'), file)
-          // add children array as 3rd arg
-          callExpr.arguments.push(t.arrayExpression(path.node.children))
-          if (callExpr.arguments.length >= 3) {
-            callExpr._prettyCall = true
+          if (path.node.children.length) {
+            // add children array as 3rd arg
+            callExpr.arguments.push(t.arrayExpression(path.node.children))
+            if (callExpr.arguments.length >= 3) {
+              callExpr._prettyCall = true
+            }
           }
           path.replaceWith(t.inherits(callExpr, path.node))
         }
