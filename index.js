@@ -114,11 +114,8 @@ module.exports = function (babel) {
     var attribs = path.node.attributes
     if (attribs.length) {
       attribs = buildOpeningElementAttributes(attribs, file)
-    } else {
-      attribs = t.nullLiteral()
+      args.push(attribs)
     }
-    args.push(attribs)
-
     return t.callExpression(t.identifier('h'), args)
   }
 

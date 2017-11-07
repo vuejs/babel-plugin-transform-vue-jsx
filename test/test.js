@@ -1,3 +1,4 @@
+/* eslint-env node, mocha */
 import { expect } from 'chai'
 import Vue from 'vue'
 
@@ -25,6 +26,11 @@ describe('babel-plugin-transform-vue-jsx', () => {
     const id = 'foo'
     const vnode = render(h => <div id={id}></div>)
     expect(vnode.data.attrs.id).to.equal('foo')
+  })
+
+  it('should omit attribs if possible', () => {
+    const vnode = render(h => <div>test</div>)
+    expect(vnode.data).to.equal(undefined)
   })
 
   it('should omit children argument if possible', () => {
