@@ -140,6 +140,7 @@ render (h) {
     <div
       // normal attributes or component props.
       id="foo"
+      msg={'hi'}
       // DOM properties are prefixed with `domProps`
       domPropsInnerHTML="bar"
       // event listeners are prefixed with `on` or `nativeOn`
