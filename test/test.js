@@ -56,12 +56,14 @@ describe('babel-plugin-transform-vue-jsx', () => {
     const noop = _ => _
     const vnode = render(h => (
       <div
+        props-on-success={noop}
         on-click={noop}
         on-kebab-case={noop}
         domProps-innerHTML="<p>hi</p>"
         hook-insert={noop}>
       </div>
     ))
+    expect(vnode.data.props['on-success']).to.equal(noop)
     expect(vnode.data.on.click).to.equal(noop)
     expect(vnode.data.on['kebab-case']).to.equal(noop)
     expect(vnode.data.domProps.innerHTML).to.equal('<p>hi</p>')
@@ -72,12 +74,14 @@ describe('babel-plugin-transform-vue-jsx', () => {
     const noop = _ => _
     const vnode = render(h => (
       <div
+        propsOnSuccess={noop}
         onClick={noop}
         onCamelCase={noop}
         domPropsInnerHTML="<p>hi</p>"
         hookInsert={noop}>
       </div>
     ))
+    expect(vnode.data.props.onSuccess).to.equal(noop)
     expect(vnode.data.on.click).to.equal(noop)
     expect(vnode.data.on.camelCase).to.equal(noop)
     expect(vnode.data.domProps.innerHTML).to.equal('<p>hi</p>')
