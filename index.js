@@ -2,6 +2,16 @@ var esutils = require('esutils')
 var groupProps = require('./lib/group-props')
 var mustUseProp = require('./lib/must-use-prop')
 
+var isInsideJsxExpression = function (t, path) {
+  if (!path.parentPath) {
+    return false
+  }
+  if (t.isJSXExpressionContainer(path.parentPath)) {
+    return true
+  }
+  return isInsideJsxExpression(t, path.parentPath)
+}
+
 module.exports = function (babel) {
   var t = babel.types
 
@@ -46,6 +56,10 @@ module.exports = function (babel) {
               }
             }, jsxChecker)
             if (!jsxChecker.hasJsx) {
+              return
+            }
+            // do nothing if this method is a part of JSX expression
+            if (isInsideJsxExpression(t, path)) {
               return
             }
             const isRender = path.node.key.name === 'render'
