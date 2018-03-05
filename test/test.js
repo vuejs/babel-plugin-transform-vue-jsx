@@ -207,7 +207,7 @@ describe('babel-plugin-transform-vue-jsx', () => {
     expect(vnode.data.class).to.deep.equal({ a: true, b: true })
   })
 
-  it('h self-defining in object methods', () => {
+  it('h injection in object methods', () => {
     const obj = {
       method () {
         return <div>test</div>
@@ -218,7 +218,24 @@ describe('babel-plugin-transform-vue-jsx', () => {
     expect(vnode.children[0].text).to.equal('test')
   })
 
-  it('h self-defining in object getters', () => {
+  it('h should not be injected in nested JSX expressions', () => {
+    const obj = {
+      method () {
+        return <div foo={{
+          render () {
+            return <div>bar</div>
+          }
+        }}>test</div>
+      }
+    }
+    const vnode = render(h => obj.method.call({ $createElement: h }))
+    expect(vnode.tag).to.equal('div')
+    const nested = vnode.data.attrs.foo.render()
+    expect(nested.tag).to.equal('div')
+    expect(nested.children[0].text).to.equal('bar')
+  })
+
+  it('h injection in object getters', () => {
     const obj = {
       get computed () {
         return <div>test</div>
@@ -232,7 +249,7 @@ describe('babel-plugin-transform-vue-jsx', () => {
     expect(vnode.children[0].text).to.equal('test')
   })
 
-  it('h self-defining in multi-level object getters', () => {
+  it('h injection in multi-level object getters', () => {
     const obj = {
       inherited: {
         get computed () {
@@ -248,7 +265,7 @@ describe('babel-plugin-transform-vue-jsx', () => {
     expect(vnode.children[0].text).to.equal('test')
   })
 
-  it('h self-defining in class methods', () => {
+  it('h injection in class methods', () => {
     class Test {
       constructor (h) {
         this.$createElement = h
@@ -262,7 +279,7 @@ describe('babel-plugin-transform-vue-jsx', () => {
     expect(vnode.children[0].text).to.equal('test')
   })
 
-  it('h self-defining in class getters', () => {
+  it('h injection in class getters', () => {
     class Test {
       constructor (h) {
         this.$createElement = h
@@ -276,7 +293,7 @@ describe('babel-plugin-transform-vue-jsx', () => {
     expect(vnode.children[0].text).to.equal('test')
   })
 
-  it('h self-defining in methods with parameters', () => {
+  it('h injection in methods with parameters', () => {
     class Test {
       constructor (h) {
         this.$createElement = h
