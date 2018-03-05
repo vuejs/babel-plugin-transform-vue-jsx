@@ -2,6 +2,11 @@
 
 > Babel plugin for Vue 2.0 JSX
 
+### Babel Compatibility Notes
+
+- If using Babel 7, use 4.x
+- If using Babel 6, use 3.x
+
 ### Requirements
 
 - Assumes you are using Babel with a module bundler e.g. Webpack, because the spread merge helper is imported as a module to avoid duplication.
