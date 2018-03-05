@@ -1,6 +1,7 @@
 var esutils = require('esutils')
 var groupProps = require('./lib/group-props')
 var mustUseProp = require('./lib/must-use-prop')
+var addDefault = require('@babel/helper-module-imports').addDefault
 
 module.exports = function (babel) {
   var t = babel.types
@@ -113,7 +114,7 @@ module.exports = function (babel) {
 
     var attribs = path.node.attributes
     if (attribs.length) {
-      attribs = buildOpeningElementAttributes(attribs, file)
+      attribs = buildOpeningElementAttributes(attribs, path)
       args.push(attribs)
     }
     return t.callExpression(t.identifier('h'), args)
@@ -144,7 +145,7 @@ module.exports = function (babel) {
    * all prior attributes to an array for later processing.
    */
 
-  function buildOpeningElementAttributes (attribs, file) {
+  function buildOpeningElementAttributes (attribs, path) {
     var _props = []
     var objs = []
 
@@ -176,7 +177,7 @@ module.exports = function (babel) {
       attribs = objs[0]
     } else if (objs.length) {
       // add prop merging helper
-      var helper = file.addImport('babel-helper-vue-jsx-merge-props', 'default', '_mergeJSXProps')
+      var helper = addDefault(path, 'babel-helper-vue-jsx-merge-props', { nameHint: '_mergeJSXProps' })
       // spread it
       attribs = t.callExpression(
         helper,
