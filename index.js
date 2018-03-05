@@ -17,7 +17,7 @@ module.exports = function (babel) {
   var t = babel.types
 
   return {
-    inherits: require('babel-plugin-syntax-jsx'),
+    inherits: require('@babel/plugin-syntax-jsx').default,
     visitor: {
       JSXNamespacedName (path) {
         throw path.buildCodeFrameError(
