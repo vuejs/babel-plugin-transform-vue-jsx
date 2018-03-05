@@ -14,7 +14,7 @@
     "test": "npm run lint && mocha --require @babel/register",
     "dev": "cd example && webpack --watch",
     "build": "webpack -d",
-    "prepublish": "npm run build"
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
