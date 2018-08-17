@@ -63,6 +63,22 @@ module.exports = function (babel) {
             if (isInsideJsxExpression(t, path)) {
               return
             }
+            // do nothing if there is a `const h = ...` already
+            const duplicateHChecker = {
+              hasH: false
+            }
+            path.traverse({
+              Declaration (path) {
+                const container = path.container[0]
+                if (['const', 'let'].includes(container.kind) && container.declarations[0].id.name === 'h') {
+                  console.warn('Duplicate declaration "h" detected. Plugin will not inject h.')
+                  this.hasH = true
+                }
+              }
+            }, duplicateHChecker)
+            if (duplicateHChecker.hasH) {
+              return
+            }
             const isRender = path.node.key.name === 'render'
             // inject h otherwise
             path.get('body').unshiftContainer('body', t.variableDeclaration('const', [
