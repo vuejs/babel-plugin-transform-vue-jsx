@@ -52,6 +52,9 @@ module.exports = function (babel) {
               hasJsx: false
             }
             path.traverse({
+              'ObjectMethod|ClassMethod' (path) {
+                path.skip()
+              },
               JSXElement () {
                 this.hasJsx = true
               }
@@ -61,6 +64,22 @@ module.exports = function (babel) {
             }
             // do nothing if this method is a part of JSX expression
             if (isInsideJsxExpression(t, path)) {
+              return
+            }
+            // do nothing if there is a `const h = ...` already
+            const duplicateHChecker = {
+              hasH: false
+            }
+            path.traverse({
+              Declaration (path) {
+                const container = path.container[0]
+                if (['const', 'let'].includes(container.kind) && container.declarations[0].id.name === 'h') {
+                  console.warn('Duplicate declaration "h" detected. Plugin will not inject h.')
+                  this.hasH = true
+                }
+              }
+            }, duplicateHChecker)
+            if (duplicateHChecker.hasH) {
               return
             }
             const isRender = path.node.key.name === 'render'
