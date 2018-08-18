@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "lint": "eslint index.js",
-    "test": "npm run lint && mocha --require @babel/register --inspect-brk",
+    "test": "npm run lint && mocha --require @babel/register",
     "dev": "cd example && webpack --watch",
     "build": "webpack -d",
     "prepublishOnly": "npm run build"
