@@ -235,6 +235,59 @@ describe('babel-plugin-transform-vue-jsx', () => {
     expect(nested.children[0].text).to.equal('bar')
   })
 
+  it('duplicate h from this should be skipped', () => {
+    const my = {}
+    my.fun = (obj) => {
+      const vnode = render(h => obj.render.call({ $createElement: h }, h))
+    }
+
+    const exported = {
+      methods: {
+        callFun () {
+          my.fun({
+            testProp: 1,
+            render () {
+              return (
+                <div>
+                  <div>test</div>
+                </div>
+              )
+            }
+          })
+        }
+      }
+    }
+
+    exported.methods.callFun()
+  })
+
+  it('duplicate h from arguments should be skipped', () => {
+    const fun = (obj) => {
+      const vnode = render(h => obj.rende.call({ $createElement: () => {
+        throw new Error('this.$createElement should not be called at this time.')
+      } }, h))
+      expect(vnode.tag).to.equal('div')
+      expect(vnode.children[0].text).to.equal('test')
+    }
+
+    const exported = {
+      methods: {
+        callFun () {
+          fun({
+            testProp: 1,
+            rende (h) {
+              return (
+                <div>test</div>
+              )
+            }
+          })
+        }
+      }
+    }
+
+    exported.methods.callFun()
+  })
+
   it('h injection in object getters', () => {
     const obj = {
       get computed () {
