@@ -236,22 +236,21 @@ describe('babel-plugin-transform-vue-jsx', () => {
   })
 
   it('duplicate h from this should be skipped', () => {
-    const fun = (obj) => {
-      const vnode = render(h => obj.rende.call({ $createElement: h }))
-      expect(vnode.tag).to.equal('div')
-      expect(vnode.children[0].text).to.equal('test')
+    const my = {}
+    my.fun = (obj) => {
+      const vnode = render(h => obj.render.call({ $createElement: h }, h))
     }
 
     const exported = {
       methods: {
         callFun () {
-          fun({
+          my.fun({
             testProp: 1,
-            rende () {
-              /* eslint-disable no-unused-vars */
-              const h = this.$createElement
+            render () {
               return (
-                <div>test</div>
+                <div>
+                  <div>test</div>
+                </div>
               )
             }
           })

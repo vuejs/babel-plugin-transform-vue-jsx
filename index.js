@@ -52,6 +52,9 @@ module.exports = function (babel) {
               hasJsx: false
             }
             path.traverse({
+              'ObjectMethod|ClassMethod' (path) {
+                path.skip()
+              },
               JSXElement () {
                 this.hasJsx = true
               }
