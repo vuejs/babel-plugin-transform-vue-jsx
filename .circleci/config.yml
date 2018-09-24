@@ -3,6 +3,7 @@ jobs:
   build:
     docker:
     - image: circleci/node:8
+    working_directory: ~/repository
     steps:
     - run: yarn
     - run: yarn lint
