@@ -1,0 +1,11 @@
+version: 2
+jobs:
+  build:
+    docker:
+    - image: circleci/node:8
+    working_directory: ~/repository
+    steps:
+    - checkout
+    - run: yarn
+    - run: yarn lint
+    - run: yarn test
