@@ -94,7 +94,8 @@ render (h) {
   return h('div', {
     // Component props
     props: {
-      msg: 'hi'
+      msg: 'hi',
+      onCustomEvent: this.customEventHandler
     },
     // normal HTML attributes
     attrs: {
@@ -143,8 +144,9 @@ The equivalent of the above in Vue 2.0 JSX is:
 render (h) {
   return (
     <div
-      // normal attributes or component props.
+      // normal attributes or prefix with on props.
       id="foo"
+      propsOnCustomEvent={this.customEventHandler}
       // DOM properties are prefixed with `domProps`
       domPropsInnerHTML="bar"
       // event listeners are prefixed with `on` or `nativeOn`
