@@ -28,7 +28,7 @@ In your `.babelrc`:
 
 ``` json
 {
-  "presets": ["env"],
+  "presets": ["@babel/env"],
   "plugins": ["transform-vue-jsx"]
 }
 ```
